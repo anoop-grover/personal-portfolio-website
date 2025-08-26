@@ -107,10 +107,10 @@ export default function Home() {
           <a href="https://github.com/anoop-grover" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
             <FaGithub />
           </a>
-          <a href="https://linkedin.com/in/anoop-grover" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
+          <a href="https://www.linkedin.com/in/anoopgroverrr/" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
             <FaLinkedin />
           </a>
-          <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
+          <a href="https://x.com/anoopgroverrr" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
             <FaTwitter />
           </a>
         </div>
