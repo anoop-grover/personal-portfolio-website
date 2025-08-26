@@ -1,9 +1,12 @@
+import Home from "./components/Home"
+import About from "./components/About"
+
 export default function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold">
-        🚀 Welcome to Anoop Grover's Portfolio
-      </h1>
+    <div>
+      <Home />
+      <About />
+      {/* Next: Projects, Services, Certifications, Testimonials, Contact, Footer */}
     </div>
   )
 }
