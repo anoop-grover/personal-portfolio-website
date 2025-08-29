@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 
-export default function Home() {
+export default function HeroSection() {
   // Typing effect
   const roles = ["Full-Stack Developer", "DSA Enthusiast", "SQL Developer"];
   const [currentRole, setCurrentRole] = useState("");
@@ -11,7 +11,7 @@ export default function Home() {
   const [charIndex, setCharIndex] = useState(0);
 
   useEffect(() => {
-    const typingSpeed = 150;
+    const typingSpeed = 120;
     const timeout = setTimeout(() => {
       if (charIndex < roles[roleIndex].length) {
         setCurrentRole(currentRole + roles[roleIndex][charIndex]);
@@ -24,26 +24,34 @@ export default function Home() {
         }, 2000);
       }
     }, typingSpeed);
-
     return () => clearTimeout(timeout);
-  }, [charIndex, currentRole, roleIndex, roles]);
+  }, [charIndex, currentRole, roleIndex]);
 
-  // Particles init
+  // Particles Background
   const particlesInit = async (main) => {
     await loadFull(main);
   };
 
+  // Countdown Timer (Example: Product Launch)
+  const [countdown, setCountdown] = useState(86400); // 24h in seconds
+  useEffect(() => {
+    const interval = setInterval(() => setCountdown((prev) => prev - 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  const formatTime = (s) =>
+    `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(
+      Math.floor((s % 3600) / 60)
+    ).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
+  // Dark/Light Mode Toggle
+  const [dark, setDark] = useState(true);
+
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center text-white overflow-hidden px-4">
-      
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 animate-gradient-slow z-0"></div>
-
-      {/* Floating blobs */}
-      <div className="absolute w-48 h-48 bg-purple-400/30 rounded-full top-10 left-5 animate-blob"></div>
-      <div className="absolute w-60 h-60 bg-pink-400/30 rounded-full bottom-24 right-10 animate-blob animation-delay-2000"></div>
-      <div className="absolute w-36 h-36 bg-indigo-400/20 rounded-full top-1/2 left-1/4 animate-blob animation-delay-4000"></div>
-
+    <section
+      className={`relative w-full min-h-screen flex items-center justify-center ${
+        dark ? "bg-gray-900 text-white" : "bg-gray-100 text-black"
+      } overflow-hidden px-4`}
+    >
       {/* Particles */}
       <Particles
         id="tsparticles"
@@ -52,35 +60,39 @@ export default function Home() {
           fullScreen: { enable: true, zIndex: 0 },
           particles: {
             number: { value: 40 },
-            color: { value: "#ffffff" },
-            shape: { type: "circle" },
-            opacity: { value: 0.3 },
-            size: { value: { min: 1, max: 3 } },
+            color: { value: dark ? "#ffffff" : "#000000" },
+            links: { enable: true, distance: 150, color: dark ? "#fff" : "#000" },
             move: { enable: true, speed: 1 },
-            links: { enable: true, distance: 150, color: "#ffffff", opacity: 0.2, width: 1 },
           },
         }}
       />
 
-      {/* Glass Card */}
-      <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-10 flex flex-col items-center text-center max-w-xl shadow-xl hover:shadow-2xl transition-shadow duration-500">
-        
+      {/* Hero Card */}
+      <div className="relative z-10 rounded-3xl p-8 md:p-10 flex flex-col items-center text-center max-w-3xl shadow-xl bg-white/10 backdrop-blur-md">
+        {/* Sticky Mini Navigation */}
+        <nav className="absolute top-4 left-4 flex gap-4 text-sm font-medium">
+          <a href="#projects">Projects</a>
+          <a href="#testimonials">Testimonials</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
         {/* Avatar */}
         <img
-          src="https://via.placeholder.com/150" // replace with your avatar
+          src="https://via.placeholder.com/150"
           alt="Anoop Grover"
-          className="w-32 md:w-36 h-32 md:h-36 rounded-full border-4 border-white mb-6 shadow-lg hover:scale-105 transform transition-transform duration-500"
+          className="w-32 h-32 rounded-full border-4 border-white mb-6 shadow-lg"
         />
 
         {/* Name */}
         <h1 className="text-4xl md:text-5xl font-bold mb-2">Anoop Grover</h1>
 
-        {/* Typing Role */}
+        {/* Role Typing Effect */}
         <h2 className="text-xl md:text-2xl font-semibold mb-4 min-h-[40px]">
-          {currentRole}<span className="animate-pulse">|</span>
+          {currentRole}
+          <span className="animate-pulse">|</span>
         </h2>
 
-        {/* One-line tagline */}
+        {/* Tagline */}
         <p className="text-base md:text-lg mb-6 max-w-md">
           Turning ideas into impactful solutions through code.
         </p>
@@ -89,77 +101,112 @@ export default function Home() {
         <div className="flex gap-4 mb-6 flex-wrap justify-center">
           <a
             href="#contact"
-            className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 hover:scale-105 transform transition-all duration-300"
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg shadow hover:scale-105 transition"
           >
             Hire Me
           </a>
           <a
             href="/resume.pdf"
             download
-            className="px-6 py-3 border border-white font-semibold rounded-lg hover:bg-white hover:text-purple-700 hover:scale-105 transform transition-all duration-300"
+            className="px-6 py-3 border border-white rounded-lg hover:bg-white hover:text-purple-700 transition"
           >
             Download Resume
           </a>
         </div>
 
         {/* Social Icons */}
-        <div className="flex gap-6 mb-6 text-2xl justify-center">
-          <a href="https://github.com/anoop-grover" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
+        <div className="flex gap-6 mb-6 text-2xl">
+          <a href="https://github.com/anoop-grover" target="_blank">
             <FaGithub />
           </a>
-          <a href="https://www.linkedin.com/in/anoopgroverrr/" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
+          <a href="https://linkedin.com/in/anoopgroverrr" target="_blank">
             <FaLinkedin />
           </a>
-          <a href="https://x.com/anoopgroverrr" target="_blank" rel="noopener noreferrer" className="hover:scale-125 transform transition-transform duration-300">
+          <a href="https://x.com/anoopgroverrr" target="_blank">
             <FaTwitter />
           </a>
         </div>
 
         {/* Quick Stats */}
-        <div className="flex gap-6 mb-4 flex-wrap justify-center">
-          <div className="text-center bg-white/20 rounded-lg p-4 min-w-[80px] hover:bg-white/30 hover:scale-105 transform transition duration-300">
-            <h3 className="text-2xl md:text-3xl font-bold">5+</h3>
-            <p>Projects</p>
-          </div>
-          <div className="text-center bg-white/20 rounded-lg p-4 min-w-[80px] hover:bg-white/30 hover:scale-105 transform transition duration-300">
-            <h3 className="text-2xl md:text-3xl font-bold">2+ yrs</h3>
-            <p>Experience</p>
-          </div>
-          <div className="text-center bg-white/20 rounded-lg p-4 min-w-[80px] hover:bg-white/30 hover:scale-105 transform transition duration-300">
-            <h3 className="text-2xl md:text-3xl font-bold">3</h3>
-            <p>Certifications</p>
-          </div>
+        <div className="flex gap-6 mb-6 flex-wrap justify-center">
+          <Stat number="5+" label="Projects" />
+          <Stat number="2+ yrs" label="Experience" />
+          <Stat number="3" label="Certifications" />
         </div>
+
+        {/* Featured Project Preview */}
+        <div className="mb-6 p-4 bg-white/20 rounded-xl shadow hover:scale-105 transition">
+          <h3 className="font-bold">Featured Project</h3>
+          <p className="text-sm">AI Meeting Assistant 🚀</p>
+        </div>
+
+        {/* Testimonials in Hero */}
+        <blockquote className="italic mb-6 text-sm bg-white/10 rounded-lg p-4">
+          "Anoop is a passionate learner and a great teammate!" – Mentor
+        </blockquote>
+
+        {/* Newsletter */}
+        <form className="flex gap-2 mb-6">
+          <input
+            type="email"
+            placeholder="Enter email"
+            className="px-3 py-2 rounded-lg text-black"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-indigo-600 rounded-lg text-white"
+          >
+            Subscribe
+          </button>
+        </form>
+
+        {/* Fun Facts */}
+        <div className="mb-6">
+          <p>⚡ Loves Coffee | 🎵 Music Enthusiast | 🌍 Exploring Tech</p>
+        </div>
+
+        {/* Languages / Tools Badge Strip */}
+        <div className="flex gap-3 flex-wrap mb-6">
+          <span className="px-3 py-1 bg-white/20 rounded-lg">React</span>
+          <span className="px-3 py-1 bg-white/20 rounded-lg">C++</span>
+          <span className="px-3 py-1 bg-white/20 rounded-lg">SQL</span>
+        </div>
+
+        {/* Countdown */}
+        <div className="mb-6">
+          <h3 className="font-bold">Next Launch In:</h3>
+          <p className="text-lg">{formatTime(countdown)}</p>
+        </div>
+
+        {/* Chatbot Widget */}
+        <button className="mb-6 px-4 py-2 bg-green-500 rounded-lg text-white">
+          💬 Chat with Me
+        </button>
+
+        {/* Music Control */}
+        <button className="mb-6 px-4 py-2 bg-pink-500 rounded-lg text-white">
+          🎵 Toggle Music
+        </button>
+
+        {/* Light/Dark Toggle */}
+        <button
+          onClick={() => setDark(!dark)}
+          className="px-4 py-2 bg-yellow-400 rounded-lg text-black"
+        >
+          {dark ? "☀ Light Mode" : "🌙 Dark Mode"}
+        </button>
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 z-10 animate-bounce text-white text-3xl">
-        ⬇
-      </div>
-
-      {/* Tailwind Animations */}
-      <style>
-        {`
-        @keyframes gradient-slow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-slow {
-          background-size: 200% 200%;
-          animation: gradient-slow 15s ease infinite;
-        }
-        @keyframes blob {
-          0%, 100% { transform: translate(0,0) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-        .animate-blob { animation: blob 8s infinite; }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-        `}
-      </style>
-
+      <div className="absolute bottom-6 z-10 animate-bounce text-3xl">⬇</div>
     </section>
   );
 }
+
+// Small Stat Component
+const Stat = ({ number, label }) => (
+  <div className="text-center bg-white/20 rounded-lg p-4 min-w-[90px]">
+    <h3 className="text-2xl font-bold">{number}</h3>
+    <p>{label}</p>
+  </div>
+);
