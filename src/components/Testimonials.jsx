@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const testimonialsData = [
+const initialTestimonials = [
   {
     id: 1,
     name: "John Doe",
@@ -43,22 +43,49 @@ const testimonialsData = [
     rating: 5,
     category: "Teammate",
   },
-  // Add more testimonials here
 ];
 
 export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState(initialTestimonials);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    role: "",
+    feedback: "",
+    rating: 5,
+    category: "Mentor",
+    avatar: "/avatars/default.jpg",
+  });
 
   const categories = ["All", "Mentor", "Client", "Teammate", "Professor"];
 
-  const filteredTestimonials = testimonialsData.filter((t) => {
+  const filteredTestimonials = testimonials.filter((t) => {
     const matchesCategory = category === "All" || t.category === category;
     const matchesSearch =
       t.name.toLowerCase().includes(search.toLowerCase()) ||
       t.feedback.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newTestimonial = {
+      id: testimonials.length + 1,
+      ...formData,
+    };
+    setTestimonials([newTestimonial, ...testimonials]);
+    setFormData({
+      name: "",
+      role: "",
+      feedback: "",
+      rating: 5,
+      category: "Mentor",
+      avatar: "/avatars/default.jpg",
+    });
+    setShowForm(false);
+  };
 
   return (
     <section className="py-16 px-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 relative">
@@ -102,7 +129,7 @@ export default function Testimonials() {
 
         {/* Featured Top 3 */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonialsData.filter((t) => t.featured).map((t) => (
+          {testimonials.filter((t) => t.featured).map((t) => (
             <div key={t.id} className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-md relative">
               <span className="absolute -top-3 -left-3 text-4xl opacity-20">“</span>
               <p className="italic text-gray-800 dark:text-gray-100 mb-4">{t.feedback}</p>
@@ -122,7 +149,7 @@ export default function Testimonials() {
           ))}
         </div>
 
-        {/* Swiper Carousel for filtered testimonials */}
+        {/* Swiper Carousel */}
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={30}
@@ -159,7 +186,7 @@ export default function Testimonials() {
         {/* Marquee / Ticker Strip */}
         <div className="mt-8 overflow-hidden relative">
           <div className="whitespace-nowrap animate-marquee flex gap-8">
-            {testimonialsData.map((t) => (
+            {testimonials.map((t) => (
               <div
                 key={t.id}
                 className="inline-block bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-md text-gray-800 dark:text-gray-100 font-medium"
@@ -170,13 +197,85 @@ export default function Testimonials() {
           </div>
         </div>
 
-        {/* Submit Testimonial */}
+        {/* Submit Testimonial Button */}
         <div className="mt-8 text-center">
-          <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          >
             📝 Submit a Testimonial
           </button>
         </div>
       </div>
+
+      {/* Popup Form */}
+      {showForm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Submit Testimonial</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-gray-200"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Your Role (e.g., Client @ ABC)"
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-gray-200"
+                required
+              />
+              <textarea
+                placeholder="Your Feedback"
+                value={formData.feedback}
+                onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-gray-200"
+                required
+              />
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-gray-200"
+              >
+                {categories.filter(c => c !== "All").map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <div className="flex justify-between items-center">
+                <label className="text-gray-700 dark:text-gray-300">Rating:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  value={formData.rating}
+                  onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
+                  className="w-16 px-2 py-1 border rounded dark:bg-gray-700 dark:text-gray-200"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Marquee Animation */}
       <style>
