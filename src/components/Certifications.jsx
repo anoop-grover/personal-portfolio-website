@@ -1,11 +1,7 @@
-// src/components/Certifications.jsx
 "use client";
-
 import { useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
-const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
-
+// Sample Certifications
 const certificationsData = [
   {
     id: 1,
@@ -16,7 +12,7 @@ const certificationsData = [
     skills: ["Python", "Programming"],
     badgeLink: "#",
     completed: true,
-    location: { coordinates: [-84.3879, 33.749], name: "USA" },
+    location: "USA",
   },
   {
     id: 2,
@@ -27,7 +23,7 @@ const certificationsData = [
     skills: ["SQL", "Databases"],
     badgeLink: "#",
     completed: true,
-    location: { coordinates: [2.3522, 48.8566], name: "France" },
+    location: "France",
   },
   {
     id: 3,
@@ -38,21 +34,20 @@ const certificationsData = [
     skills: ["HTML", "CSS", "JavaScript", "React"],
     badgeLink: "#",
     completed: false,
-    location: { coordinates: [77.209, 28.6139], name: "India" },
+    location: "India",
   },
 ];
 
-// Testimonials data
+// Testimonials
 const testimonials = [
   { id: 1, name: "Dr. Smith", role: "Coursera Instructor", feedback: "Anoop showed exceptional dedication." },
   { id: 2, name: "Jane Doe", role: "Mentor", feedback: "Strong SQL fundamentals and problem-solving skills." },
   { id: 3, name: "Peer Review", role: "Teammate", feedback: "Great collaborator during full-stack project." },
 ];
 
-// Hook for animated counters
+// Counter Hook
 function useCountUp(target, duration = 1500) {
   const [count, setCount] = useState(0);
-
   useEffect(() => {
     let start = 0;
     const step = Math.ceil((target / duration) * 20);
@@ -67,12 +62,20 @@ function useCountUp(target, duration = 1500) {
     }, 20);
     return () => clearInterval(interval);
   }, [target, duration]);
-
   return count;
 }
 
 export default function Certifications() {
   const [search, setSearch] = useState("");
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  // Auto-slide testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredCertifications = certificationsData.filter((cert) =>
     cert.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -84,12 +87,13 @@ export default function Certifications() {
   const totalHours = useCountUp(certificationsData.reduce((sum, cert) => sum + cert.hours, 0));
 
   const downloadAllPDF = () => {
-    alert("Download All Certificates as PDF - Feature placeholder");
+    window.print(); // simple PDF download via browser
   };
 
   return (
     <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900 relative">
       <div className="max-w-6xl mx-auto">
+        {/* Heading */}
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-800 dark:text-gray-100">
           🏆 Certifications
         </h2>
@@ -139,13 +143,13 @@ export default function Certifications() {
           {filteredCertifications.map((cert) => (
             <div
               key={cert.id}
-              className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300 relative"
+              className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300"
             >
               <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">{cert.title}</h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{cert.issuer} | {cert.year}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{cert.hours} Hours</p>
 
-              {/* Skills / Tags */}
+              {/* Skills */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {cert.skills.map((skill, i) => (
                   <span
@@ -163,7 +167,7 @@ export default function Certifications() {
                   <div
                     className={`h-2 bg-green-500 rounded-full transition-all duration-500`}
                     style={{ width: cert.completed ? "100%" : "50%" }}
-                  ></div>
+                  />
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {cert.completed ? "Completed" : "In Progress"}
@@ -180,7 +184,10 @@ export default function Certifications() {
                 >
                   Verify Badge
                 </a>
-                <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                <button
+                  onClick={() => window.print()}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
                   Download PDF
                 </button>
               </div>
@@ -188,7 +195,7 @@ export default function Certifications() {
           ))}
         </div>
 
-        {/* Timeline View */}
+        {/* Timeline */}
         <div className="mt-12">
           <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Timeline View</h3>
           <div className="relative border-l-2 border-gray-300 dark:border-gray-600 pl-6">
@@ -202,67 +209,47 @@ export default function Certifications() {
           </div>
         </div>
 
-        {/* Gamification Section */}
-        <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">🎮 Gamification</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-4 bg-yellow-100 dark:bg-yellow-800 rounded-xl shadow">
-              <h4 className="font-bold text-yellow-800 dark:text-yellow-200">Level 1</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Beginner – 1–2 certs</p>
-            </div>
-            <div className="p-4 bg-green-100 dark:bg-green-800 rounded-xl shadow">
-              <h4 className="font-bold text-green-800 dark:text-green-200">Level 2</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Intermediate – 3–5 certs</p>
-            </div>
-            <div className="p-4 bg-purple-100 dark:bg-purple-800 rounded-xl shadow">
-              <h4 className="font-bold text-purple-800 dark:text-purple-200">Level 3</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Expert – 6+ certs</p>
-            </div>
+        {/* Gamification */}
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          <div className="p-4 bg-yellow-100 dark:bg-yellow-800 rounded-xl shadow">
+            <h4 className="font-bold text-yellow-800 dark:text-yellow-200">Level 1</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Beginner – 1–2 certs</p>
+          </div>
+          <div className="p-4 bg-green-100 dark:bg-green-800 rounded-xl shadow">
+            <h4 className="font-bold text-green-800 dark:text-green-200">Level 2</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Intermediate – 3–5 certs</p>
+          </div>
+          <div className="p-4 bg-purple-100 dark:bg-purple-800 rounded-xl shadow">
+            <h4 className="font-bold text-purple-800 dark:text-purple-200">Level 3</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Expert – 6+ certs</p>
           </div>
         </div>
 
-        {/* Testimonials Section */}
-        <div className="mt-12">
+        {/* Testimonials Carousel */}
+        <div className="mt-12 text-center">
           <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">💬 Testimonials</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <div key={t.id} className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-                <p className="italic text-gray-700 dark:text-gray-300">“{t.feedback}”</p>
-                <p className="mt-3 font-semibold text-gray-800 dark:text-gray-100">{t.name}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t.role}</p>
-              </div>
-            ))}
+          <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-md mx-auto transition">
+            <p className="italic text-gray-700 dark:text-gray-300">“{testimonials[currentTestimonial].feedback}”</p>
+            <p className="mt-3 font-semibold text-gray-800 dark:text-gray-100">{testimonials[currentTestimonial].name}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{testimonials[currentTestimonial].role}</p>
           </div>
         </div>
 
-        {/* Interactive World Map */}
-        <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 text-center">
+        {/* World Map Replacement (Simple) */}
+        <div className="mt-12 text-center">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
             🌍 Global Certification Locations
           </h3>
-          <ComposableMap projection="geoMercator" width={800} height={300} className="mx-auto">
-            <Geographies geography={geoUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="#E5E7EB"
-                    stroke="#D1D5DB"
-                    className="dark:fill-gray-700 dark:stroke-gray-600"
-                  />
-                ))
-              }
-            </Geographies>
-            {certificationsData.map((cert) => (
-              <Marker key={cert.id} coordinates={cert.location.coordinates}>
-                <circle r={6} fill="#2563EB" stroke="#fff" strokeWidth={2} />
-                <text textAnchor="middle" y={-10} style={{ fontSize: "10px", fill: "#111" }}>
-                  {cert.issuer}
-                </text>
-              </Marker>
+          <p className="text-gray-600 dark:text-gray-400">
+            Certifications earned from USA, France, and India.
+          </p>
+          <div className="flex justify-center gap-4 mt-4">
+            {["USA", "France", "India"].map((loc) => (
+              <span key={loc} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 rounded-full">
+                {loc}
+              </span>
             ))}
-          </ComposableMap>
+          </div>
         </div>
       </div>
     </section>
