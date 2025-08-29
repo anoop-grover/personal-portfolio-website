@@ -1,7 +1,10 @@
 // src/components/Certifications.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+
+const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
 
 const certificationsData = [
   {
@@ -13,6 +16,7 @@ const certificationsData = [
     skills: ["Python", "Programming"],
     badgeLink: "#",
     completed: true,
+    location: { coordinates: [-84.3879, 33.749], name: "USA" },
   },
   {
     id: 2,
@@ -23,6 +27,7 @@ const certificationsData = [
     skills: ["SQL", "Databases"],
     badgeLink: "#",
     completed: true,
+    location: { coordinates: [2.3522, 48.8566], name: "France" },
   },
   {
     id: 3,
@@ -33,9 +38,38 @@ const certificationsData = [
     skills: ["HTML", "CSS", "JavaScript", "React"],
     badgeLink: "#",
     completed: false,
+    location: { coordinates: [77.209, 28.6139], name: "India" },
   },
-  // Add more certifications
 ];
+
+// Testimonials data
+const testimonials = [
+  { id: 1, name: "Dr. Smith", role: "Coursera Instructor", feedback: "Anoop showed exceptional dedication." },
+  { id: 2, name: "Jane Doe", role: "Mentor", feedback: "Strong SQL fundamentals and problem-solving skills." },
+  { id: 3, name: "Peer Review", role: "Teammate", feedback: "Great collaborator during full-stack project." },
+];
+
+// Hook for animated counters
+function useCountUp(target, duration = 1500) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const step = Math.ceil((target / duration) * 20);
+    const interval = setInterval(() => {
+      start += step;
+      if (start >= target) {
+        setCount(target);
+        clearInterval(interval);
+      } else {
+        setCount(start);
+      }
+    }, 20);
+    return () => clearInterval(interval);
+  }, [target, duration]);
+
+  return count;
+}
 
 export default function Certifications() {
   const [search, setSearch] = useState("");
@@ -45,11 +79,10 @@ export default function Certifications() {
     cert.issuer.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalCerts = certificationsData.length;
-  const completedCerts = certificationsData.filter(c => c.completed).length;
-  const totalHours = certificationsData.reduce((sum, cert) => sum + cert.hours, 0);
+  const totalCerts = useCountUp(certificationsData.length);
+  const completedCerts = useCountUp(certificationsData.filter(c => c.completed).length);
+  const totalHours = useCountUp(certificationsData.reduce((sum, cert) => sum + cert.hours, 0));
 
-  // Dummy function for Download All PDF
   const downloadAllPDF = () => {
     alert("Download All Certificates as PDF - Feature placeholder");
   };
@@ -155,7 +188,7 @@ export default function Certifications() {
           ))}
         </div>
 
-        {/* Timeline / Optional Extra Section */}
+        {/* Timeline View */}
         <div className="mt-12">
           <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Timeline View</h3>
           <div className="relative border-l-2 border-gray-300 dark:border-gray-600 pl-6">
@@ -169,12 +202,67 @@ export default function Certifications() {
           </div>
         </div>
 
-        {/* World Map Placeholder */}
-        <div className="mt-12 text-center">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Global Certification Locations</h3>
-          <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-300">[Interactive world map goes here]</p>
+        {/* Gamification Section */}
+        <div className="mt-12">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">🎮 Gamification</h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-4 bg-yellow-100 dark:bg-yellow-800 rounded-xl shadow">
+              <h4 className="font-bold text-yellow-800 dark:text-yellow-200">Level 1</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Beginner – 1–2 certs</p>
+            </div>
+            <div className="p-4 bg-green-100 dark:bg-green-800 rounded-xl shadow">
+              <h4 className="font-bold text-green-800 dark:text-green-200">Level 2</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Intermediate – 3–5 certs</p>
+            </div>
+            <div className="p-4 bg-purple-100 dark:bg-purple-800 rounded-xl shadow">
+              <h4 className="font-bold text-purple-800 dark:text-purple-200">Level 3</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Expert – 6+ certs</p>
+            </div>
           </div>
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="mt-12">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">💬 Testimonials</h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t) => (
+              <div key={t.id} className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+                <p className="italic text-gray-700 dark:text-gray-300">“{t.feedback}”</p>
+                <p className="mt-3 font-semibold text-gray-800 dark:text-gray-100">{t.name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Interactive World Map */}
+        <div className="mt-12">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 text-center">
+            🌍 Global Certification Locations
+          </h3>
+          <ComposableMap projection="geoMercator" width={800} height={300} className="mx-auto">
+            <Geographies geography={geoUrl}>
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill="#E5E7EB"
+                    stroke="#D1D5DB"
+                    className="dark:fill-gray-700 dark:stroke-gray-600"
+                  />
+                ))
+              }
+            </Geographies>
+            {certificationsData.map((cert) => (
+              <Marker key={cert.id} coordinates={cert.location.coordinates}>
+                <circle r={6} fill="#2563EB" stroke="#fff" strokeWidth={2} />
+                <text textAnchor="middle" y={-10} style={{ fontSize: "10px", fill: "#111" }}>
+                  {cert.issuer}
+                </text>
+              </Marker>
+            ))}
+          </ComposableMap>
         </div>
       </div>
     </section>
