@@ -1,12 +1,7 @@
 // src/components/Testimonials.jsx
 "use client";
 
-import { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import { useState, useEffect } from "react";
 
 const initialTestimonials = [
   {
@@ -58,6 +53,17 @@ export default function Testimonials() {
     category: "Mentor",
     avatar: "/avatars/default.jpg",
   });
+
+  // carousel index
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // auto-slide every 5s
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % filteredTestimonials.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [testimonials, search, category]);
 
   const categories = ["All", "Mentor", "Client", "Teammate", "Professor"];
 
@@ -149,39 +155,59 @@ export default function Testimonials() {
           ))}
         </div>
 
-        {/* Swiper Carousel */}
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={30}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 4000 }}
-          className="max-w-4xl mx-auto"
-        >
-          {filteredTestimonials.map((t) => (
-            <SwiperSlide key={t.id}>
-              <div className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg relative">
-                <span className="absolute -top-3 -left-3 text-4xl opacity-20">“</span>
-                <p className="italic text-gray-800 dark:text-gray-100 mb-4">{t.feedback}</p>
-                <div className="flex items-center gap-3">
-                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">{t.name}</h4>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{t.role}</span>
-                  </div>
+        {/* Custom Carousel */}
+        {filteredTestimonials.length > 0 && (
+          <div className="relative max-w-4xl mx-auto">
+            <div className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg relative text-center">
+              <span className="absolute -top-3 -left-3 text-4xl opacity-20">“</span>
+              <p className="italic text-gray-800 dark:text-gray-100 mb-4">
+                {filteredTestimonials[currentIndex].feedback}
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <img
+                  src={filteredTestimonials[currentIndex].avatar}
+                  alt={filteredTestimonials[currentIndex].name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">
+                    {filteredTestimonials[currentIndex].name}
+                  </h4>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {filteredTestimonials[currentIndex].role}
+                  </span>
                 </div>
-                <div className="mt-2 flex gap-1">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <span key={i} className="text-yellow-400">⭐</span>
-                  ))}
-                </div>
-                {/* Like / Upvote */}
-                <button className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">👍 Like</button>
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              <div className="mt-2 flex justify-center gap-1">
+                {Array.from({ length: filteredTestimonials[currentIndex].rating }).map((_, i) => (
+                  <span key={i} className="text-yellow-400">⭐</span>
+                ))}
+              </div>
+              {/* Like / Upvote */}
+              <button className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">👍 Like</button>
+            </div>
+
+            {/* Prev/Next Controls */}
+            <button
+              onClick={() =>
+                setCurrentIndex((prev) =>
+                  prev === 0 ? filteredTestimonials.length - 1 : prev - 1
+                )
+              }
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 text-white px-3 py-1 rounded-full"
+            >
+              ◀
+            </button>
+            <button
+              onClick={() =>
+                setCurrentIndex((prev) => (prev + 1) % filteredTestimonials.length)
+              }
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-700 text-white px-3 py-1 rounded-full"
+            >
+              ▶
+            </button>
+          </div>
+        )}
 
         {/* Marquee / Ticker Strip */}
         <div className="mt-8 overflow-hidden relative">
