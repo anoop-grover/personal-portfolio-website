@@ -1,315 +1,182 @@
 // src/components/Certifications.jsx
-import { useState, useRef, useEffect } from "react";
-import { motion, useAnimation } from "framer-motion";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+"use client";
+
+import { useState } from "react";
 
 const certificationsData = [
   {
     id: 1,
     title: "Python for Everybody",
     issuer: "Coursera",
-    date: "Jan 2024",
-    link: "https://coursera.org/verify/xxxx",
-    tags: ["Python", "Programming", "Basics"],
+    year: "2024",
+    hours: 40,
+    skills: ["Python", "Programming"],
+    badgeLink: "#",
+    completed: true,
   },
   {
     id: 2,
-    title: "SQL (Intermediate)",
-    issuer: "HackerRank",
-    date: "Mar 2024",
-    link: "https://hackerrank.com/cert/xxxx",
-    tags: ["SQL", "Database", "Queries"],
+    title: "SQL Mastery",
+    issuer: "Udemy",
+    year: "2025",
+    hours: 30,
+    skills: ["SQL", "Databases"],
+    badgeLink: "#",
+    completed: true,
   },
   {
     id: 3,
-    title: "Web Development Bootcamp",
-    issuer: "Udemy",
-    date: "Jul 2024",
-    link: "https://udemy.com/certificate/xxxx",
-    tags: ["HTML", "CSS", "JavaScript"],
+    title: "Full-Stack Web Development",
+    issuer: "edX",
+    year: "2025",
+    hours: 120,
+    skills: ["HTML", "CSS", "JavaScript", "React"],
+    badgeLink: "#",
+    completed: false,
   },
+  // Add more certifications
 ];
 
-// Simple Counter Component
-function Counter({ from, to, duration }) {
-  const controls = useAnimation();
-  const [count, setCount] = useState(from);
-
-  useEffect(() => {
-    controls.start({
-      val: to,
-      transition: { duration: duration, ease: "easeOut" },
-    });
-  }, [to]);
-
-  return (
-    <motion.span
-      animate={controls}
-      initial={{ val: from }}
-      variants={{
-        val: (val) => ({
-          transitionEnd: { textContent: Math.floor(val) },
-        }),
-      }}
-    >
-      {count}
-    </motion.span>
-  );
-}
-
 export default function Certifications() {
-  const [view, setView] = useState("grid");
-  const sectionRef = useRef(null);
+  const [search, setSearch] = useState("");
 
-  // 📄 Download Single Certificate
-  const downloadCertificate = async (id) => {
-    const element = document.getElementById(`cert-${id}`);
-    if (!element) return;
+  const filteredCertifications = certificationsData.filter((cert) =>
+    cert.title.toLowerCase().includes(search.toLowerCase()) ||
+    cert.issuer.toLowerCase().includes(search.toLowerCase())
+  );
 
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL("image/png");
+  const totalCerts = certificationsData.length;
+  const completedCerts = certificationsData.filter(c => c.completed).length;
+  const totalHours = certificationsData.reduce((sum, cert) => sum + cert.hours, 0);
 
-    const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`certificate-${id}.pdf`);
-  };
-
-  // 📄 Download ALL Certificates
-  const downloadAllCertificates = async () => {
-    const pdf = new jsPDF("p", "mm", "a4");
-
-    for (let i = 0; i < certificationsData.length; i++) {
-      const element = document.getElementById(`cert-${certificationsData[i].id}`);
-      if (!element) continue;
-
-      const canvas = await html2canvas(element);
-      const imgData = canvas.toDataURL("image/png");
-
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      if (i !== 0) pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    }
-
-    pdf.save("all-certificates.pdf");
-  };
-
-  // 🖨️ Print Single Certificate
-  const printCertificate = (id) => {
-    const element = document.getElementById(`cert-${id}`);
-    if (!element) return;
-
-    const newWindow = window.open("", "_blank");
-    newWindow.document.write(`<html><head><title>Print Certificate</title></head><body>`);
-    newWindow.document.write(element.outerHTML);
-    newWindow.document.write("</body></html>");
-    newWindow.document.close();
-    newWindow.print();
+  // Dummy function for Download All PDF
+  const downloadAllPDF = () => {
+    alert("Download All Certificates as PDF - Feature placeholder");
   };
 
   return (
-    <section id="certifications" ref={sectionRef} className="py-16 px-6 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-          📜 Certifications
+    <section className="py-16 px-6 bg-gray-50 dark:bg-gray-900 relative">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-800 dark:text-gray-100">
+          🏆 Certifications
         </h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-8">
-          A showcase of my achievements and continuous learning journey.
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
+          Explore my certifications, skills, and achievements
         </p>
 
-        {/* 📊 Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-          <div className="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-md">
-            <h3 className="text-3xl font-bold text-blue-600">
-              <Counter from={0} to={certificationsData.length} duration={2} />+
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">Total Certifications</p>
+        {/* Stats Counters */}
+        <div className="flex justify-center gap-12 mb-8 text-center">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalCerts}</h3>
+            <p className="text-gray-500 dark:text-gray-400">Certificates</p>
           </div>
-          <div className="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-md">
-            <h3 className="text-3xl font-bold text-green-600">
-              <Counter from={0} to={120} duration={3} />+
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">Hours Studied</p>
+          <div>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{completedCerts}</h3>
+            <p className="text-gray-500 dark:text-gray-400">Completed</p>
           </div>
-          <div className="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-md">
-            <h3 className="text-3xl font-bold text-purple-600">
-              <Counter from={0} to={15} duration={3} />+
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">Achievements</p>
+          <div>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalHours}+</h3>
+            <p className="text-gray-500 dark:text-gray-400">Hours Studied</p>
           </div>
         </div>
 
-        {/* View Toggle */}
-        <div className="flex justify-center mb-6 space-x-2">
+        {/* Search */}
+        <div className="mb-8 flex justify-center">
+          <input
+            type="text"
+            placeholder="Search certifications..."
+            className="px-4 py-2 border rounded-lg w-full sm:w-1/2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        {/* Download All PDF */}
+        <div className="text-center mb-8">
           <button
-            onClick={() => setView("grid")}
-            className={`px-4 py-2 rounded-lg border ${
-              view === "grid" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            }`}
+            onClick={downloadAllPDF}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
-            Grid
-          </button>
-          <button
-            onClick={() => setView("list")}
-            className={`px-4 py-2 rounded-lg border ${
-              view === "list" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            List
-          </button>
-          <button
-            onClick={() => setView("timeline")}
-            className={`px-4 py-2 rounded-lg border ${
-              view === "timeline" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            Timeline
+            📄 Download All Certificates as PDF
           </button>
         </div>
 
-        {/* Download All */}
-        <button
-          onClick={downloadAllCertificates}
-          className="mb-6 px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
-        >
-          📂 Download All Certificates
-        </button>
+        {/* Certifications Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCertifications.map((cert) => (
+            <div
+              key={cert.id}
+              className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300 relative"
+            >
+              <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-1">{cert.title}</h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{cert.issuer} | {cert.year}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{cert.hours} Hours</p>
 
-        {/* Certifications Display */}
-        {view === "grid" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {certificationsData.map((cert) => (
-              <CertificateCard key={cert.id} cert={cert} downloadCertificate={downloadCertificate} printCertificate={printCertificate} />
-            ))}
-          </div>
-        )}
-
-        {view === "list" && (
-          <div className="space-y-4">
-            {certificationsData.map((cert) => (
-              <CertificateCard key={cert.id} cert={cert} downloadCertificate={downloadCertificate} printCertificate={printCertificate} />
-            ))}
-          </div>
-        )}
-
-        {/* Timeline View */}
-        {view === "timeline" && (
-          <div className="relative border-l-2 border-blue-500 dark:border-blue-400 pl-6 space-y-8 text-left">
-            {certificationsData.map((cert, index) => (
-              <motion.div
-                key={cert.id}
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.2 }}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md relative"
-              >
-                {/* Timeline Dot */}
-                <span className="absolute -left-[34px] top-6 w-6 h-6 rounded-full bg-blue-600 dark:bg-blue-400 border-4 border-white dark:border-gray-900"></span>
-
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{cert.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer} • {cert.date}</p>
-
-                {/* Tags */}
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {cert.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 text-xs bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200 rounded-full"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Buttons */}
-                <div className="mt-4 flex gap-3">
-                  <button
-                    onClick={() => downloadCertificate(cert.id)}
-                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              {/* Skills / Tags */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {cert.skills.map((skill, i) => (
+                  <span
+                    key={i}
+                    className="px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 text-xs rounded-full"
                   >
-                    ⬇️ Download
-                  </button>
-                  <button
-                    onClick={() => printCertificate(cert.id)}
-                    className="px-3 py-1 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-                  >
-                    🖨️ Print
-                  </button>
-                </div>
+                    {skill}
+                  </span>
+                ))}
+              </div>
 
-                {/* Verify Link */}
+              {/* Progress Bar */}
+              <div className="mb-4">
+                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                  <div
+                    className={`h-2 bg-green-500 rounded-full transition-all duration-500`}
+                    style={{ width: cert.completed ? "100%" : "50%" }}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {cert.completed ? "Completed" : "In Progress"}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2">
                 <a
-                  href={cert.link}
+                  href={cert.badgeLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition"
                 >
-                  🔗 Verify Certificate
+                  Verify Badge
                 </a>
-              </motion.div>
+                <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                  Download PDF
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Timeline / Optional Extra Section */}
+        <div className="mt-12">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Timeline View</h3>
+          <div className="relative border-l-2 border-gray-300 dark:border-gray-600 pl-6">
+            {certificationsData.map((cert, index) => (
+              <div key={index} className="mb-6 relative">
+                <div className="absolute -left-3 w-6 h-6 bg-blue-600 rounded-full border-2 border-white dark:border-gray-900"></div>
+                <p className="text-gray-700 dark:text-gray-300 font-semibold">{cert.year} - {cert.title}</p>
+                <p className="text-gray-500 dark:text-gray-400">{cert.issuer}</p>
+              </div>
             ))}
           </div>
-        )}
+        </div>
+
+        {/* World Map Placeholder */}
+        <div className="mt-12 text-center">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Global Certification Locations</h3>
+          <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+            <p className="text-gray-500 dark:text-gray-300">[Interactive world map goes here]</p>
+          </div>
+        </div>
       </div>
     </section>
-  );
-}
-
-// Reusable Card
-function CertificateCard({ cert, downloadCertificate, printCertificate }) {
-  return (
-    <motion.div
-      id={`cert-${cert.id}`}
-      whileHover={{ scale: 1.05 }}
-      className="p-6 rounded-2xl shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-left"
-    >
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{cert.title}</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer} • {cert.date}</p>
-
-      {/* Tags */}
-      <div className="mt-3 flex flex-wrap gap-2">
-        {cert.tags.map((tag, index) => (
-          <span
-            key={index}
-            className="px-2 py-1 text-xs bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200 rounded-full"
-          >
-            #{tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Buttons */}
-      <div className="mt-4 flex gap-3">
-        <button
-          onClick={() => downloadCertificate(cert.id)}
-          className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          ⬇️ Download
-        </button>
-        <button
-          onClick={() => printCertificate(cert.id)}
-          className="px-3 py-1 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-        >
-          🖨️ Print
-        </button>
-      </div>
-
-      {/* Verify Button */}
-      <a
-        href={cert.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 inline-block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-      >
-        🔗 Verify Certificate
-      </a>
-    </motion.div>
   );
 }
