@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane, FaArrowUp } from "react-icons/fa";
+import emailjs from "emailjs-com";
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [success, setSuccess] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -21,10 +23,33 @@ export default function Contact() {
       alert("Please fill all required fields.");
       return;
     }
-    // Open default mail client for demo
-    window.location.href = `mailto:anoop@example.com?subject=${encodeURIComponent(formData.subject || "New Contact Message")}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`;
-    setSuccess(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
+
+    setLoading(true);
+
+    // EmailJS integration
+    emailjs
+      .send(
+        "your_service_id",     // Replace with your EmailJS Service ID
+        "your_template_id",    // Replace with your EmailJS Template ID
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject || "New Contact Message",
+          message: formData.message,
+        },
+        "your_public_key"      // Replace with your EmailJS Public Key
+      )
+      .then(
+        () => {
+          setSuccess(true);
+          setFormData({ name: "", email: "", subject: "", message: "" });
+        },
+        (error) => {
+          console.error("EmailJS Error:", error);
+          alert("Something went wrong. Please try again later.");
+        }
+      )
+      .finally(() => setLoading(false));
   };
 
   const downloadVCard = () => {
@@ -46,7 +71,13 @@ END:VCARD
   };
 
   return (
-    <section className={`${darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-b from-indigo-900 to-purple-800 text-white"} py-20 px-4 relative transition-colors duration-500`}>
+    <section
+      className={`${
+        darkMode
+          ? "bg-gray-900 text-white"
+          : "bg-gradient-to-b from-indigo-900 to-purple-800 text-white"
+      } py-20 px-4 relative transition-colors duration-500`}
+    >
       <div className="flex justify-between max-w-6xl mx-auto items-center mb-8">
         <h2 className="text-4xl font-bold">Contact Me</h2>
         {/* Dark Mode Toggle */}
@@ -85,10 +116,18 @@ END:VCARD
 
           {/* Quick Links & Buttons */}
           <div className="flex gap-4 flex-wrap">
-            <a href="https://www.topmate.io/your-profile" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-purple-700 rounded-lg hover:bg-purple-800 transition">
+            <a
+              href="https://www.topmate.io/your-profile"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-purple-700 rounded-lg hover:bg-purple-800 transition"
+            >
               Schedule a Meeting
             </a>
-            <button onClick={downloadVCard} className="px-4 py-2 bg-purple-700 rounded-lg hover:bg-purple-800 transition">
+            <button
+              onClick={downloadVCard}
+              className="px-4 py-2 bg-purple-700 rounded-lg hover:bg-purple-800 transition"
+            >
               Download vCard
             </button>
           </div>
@@ -98,20 +137,55 @@ END:VCARD
         <div className="bg-white/10 p-6 rounded-xl shadow-lg">
           {success && (
             <div className="bg-green-500 text-white p-4 rounded mb-4">
-              Thank you! Your message has been sent.
+              ✅ Thank you! Your message has been sent.
             </div>
           )}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="Your Name" className="px-4 py-2 rounded border text-black" required />
-            <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Your Email" className="px-4 py-2 rounded border text-black" required />
-            <input name="subject" value={formData.subject} onChange={handleChange} placeholder="Subject" className="px-4 py-2 rounded border text-black" />
-            <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Your Message" className="px-4 py-2 rounded border text-black" rows="5" required />
-            
-            {/* Placeholder for Captcha */}
-            <div className="bg-white/20 p-2 rounded text-black text-center mb-2">[Captcha Placeholder]</div>
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your Name"
+              className="px-4 py-2 rounded border text-black"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Your Email"
+              className="px-4 py-2 rounded border text-black"
+              required
+            />
+            <input
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              placeholder="Subject"
+              className="px-4 py-2 rounded border text-black"
+            />
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder="Your Message"
+              className="px-4 py-2 rounded border text-black"
+              rows="5"
+              required
+            />
 
-            <button type="submit" className="px-6 py-3 bg-purple-700 rounded-lg hover:bg-purple-800 transition flex items-center gap-2 justify-center">
-              <FaPaperPlane /> Send Message
+            {/* Placeholder for Captcha */}
+            <div className="bg-white/20 p-2 rounded text-black text-center mb-2">
+              [Captcha Placeholder]
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-3 bg-purple-700 rounded-lg hover:bg-purple-800 transition flex items-center gap-2 justify-center disabled:opacity-50"
+            >
+              <FaPaperPlane /> {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>
@@ -121,7 +195,12 @@ END:VCARD
       <div className="mt-12 max-w-6xl mx-auto rounded-lg overflow-hidden">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3491.232894153932!2d75.6740!3d30.9000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391a989f6f0234ab%3A0x123456789abcdef!2sLovely%20Professional%20University!5e0!3m2!1sen!2sin!4v1693123456789!5m2!1sen!2sin"
-          width="100%" height="350" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+          width="100%"
+          height="350"
+          style={{ border: 0 }}
+          allowFullScreen=""
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
           title="Location Map"
         ></iframe>
       </div>
