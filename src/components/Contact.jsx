@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane, FaArrowUp } from "react-icons/fa";
-import emailjs from "emailjs-com";
+//import emailjs from "emailjs-com";
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -17,40 +17,53 @@ export default function Contact() {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!formData.name || !formData.email || !formData.message) {
+  //     alert("Please fill all required fields.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   // EmailJS integration
+  //   emailjs
+  //     .send(
+  //       "your_service_id",     // Replace with your EmailJS Service ID
+  //       "your_template_id",    // Replace with your EmailJS Template ID
+  //       {
+  //         from_name: formData.name,
+  //         from_email: formData.email,
+  //         subject: formData.subject || "New Contact Message",
+  //         message: formData.message,
+  //       },
+  //       "your_public_key"      // Replace with your EmailJS Public Key
+  //     )
+  //     .then(
+  //       () => {
+  //         setSuccess(true);
+  //         setFormData({ name: "", email: "", subject: "", message: "" });
+  //       },
+  //       (error) => {
+  //         console.error("EmailJS Error:", error);
+  //         alert("Something went wrong. Please try again later.");
+  //       }
+  //     )
+  //     .finally(() => setLoading(false));
+  // };
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      alert("Please fill all required fields.");
-      return;
-    }
+  e.preventDefault();
+  if (!formData.name || !formData.email || !formData.message) {
+    alert("Please fill all required fields.");
+    return;
+  }
 
-    setLoading(true);
+  // Temporary safe submission (Vercel-friendly)
+  console.log("Form Data:", formData);
+  alert("Message sent (demo mode)");
+  setFormData({ name: "", email: "", subject: "", message: "" });
+};
 
-    // EmailJS integration
-    emailjs
-      .send(
-        "your_service_id",     // Replace with your EmailJS Service ID
-        "your_template_id",    // Replace with your EmailJS Template ID
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          subject: formData.subject || "New Contact Message",
-          message: formData.message,
-        },
-        "your_public_key"      // Replace with your EmailJS Public Key
-      )
-      .then(
-        () => {
-          setSuccess(true);
-          setFormData({ name: "", email: "", subject: "", message: "" });
-        },
-        (error) => {
-          console.error("EmailJS Error:", error);
-          alert("Something went wrong. Please try again later.");
-        }
-      )
-      .finally(() => setLoading(false));
-  };
 
   const downloadVCard = () => {
     const vCardData = `
