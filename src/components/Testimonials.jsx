@@ -1,276 +1,196 @@
-import { useState, useEffect } from "react";
-import Slider from "react-slick";
-import { FaStar, FaQuoteLeft, FaQuoteRight, FaPlus, FaThumbsUp } from "react-icons/fa";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+// src/components/Testimonials.jsx
+"use client";
+
+import { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
+const testimonialsData = [
+  {
+    id: 1,
+    name: "John Doe",
+    role: "Mentor @ XYZ",
+    feedback: "Anoop is an outstanding learner with great problem-solving skills.",
+    rating: 5,
+    category: "Mentor",
+    avatar: "/avatars/john.jpg",
+    featured: true,
+  },
+  {
+    id: 2,
+    name: "Sarah Smith",
+    role: "Client @ ABC Corp",
+    feedback: "Delivered the project with perfection and on time!",
+    rating: 5,
+    category: "Client",
+  },
+  {
+    id: 3,
+    name: "Dr. Patel",
+    role: "Professor @ LPU",
+    feedback: "Anoop demonstrates excellent technical and leadership qualities.",
+    rating: 4,
+    category: "Professor",
+  },
+  {
+    id: 4,
+    name: "Alex Johnson",
+    role: "Teammate @ Project X",
+    feedback: "Always collaborative and brings great energy to the team.",
+    rating: 5,
+    category: "Teammate",
+  },
+  // Add more testimonials here
+];
 
 export default function Testimonials() {
-  const initialTestimonials = [
-    {
-      name: "Alice Johnson",
-      designation: "Mentor",
-      company: "Google",
-      image: "https://via.placeholder.com/100",
-      rating: 5,
-      category: "Mentor",
-      feedback: "Anoop is an exceptional learner and a problem-solver. Highly recommended!",
-      likes: 0,
-    },
-    {
-      name: "Bob Smith",
-      designation: "Client",
-      company: "Freelance Project",
-      image: "https://via.placeholder.com/100",
-      rating: 4,
-      category: "Client",
-      feedback: "Delivered the project with high professionalism and efficiency.",
-      likes: 0,
-    },
-    {
-      name: "Charlie Lee",
-      designation: "Teammate",
-      company: "FAANG Prep Group",
-      image: "https://via.placeholder.com/100",
-      rating: 5,
-      category: "Teammate",
-      feedback: "Great collaboration and communication skills!",
-      likes: 0,
-    },
-  ];
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
 
   const categories = ["All", "Mentor", "Client", "Teammate", "Professor"];
-  const [testimonials, setTestimonials] = useState(initialTestimonials);
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [ratingFilter, setRatingFilter] = useState(0);
-  const [showForm, setShowForm] = useState(false);
 
-  // Typing effect states
-  const [typedFeedback, setTypedFeedback] = useState("");
-  const [currentFeedbackIdx, setCurrentFeedbackIdx] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-
-  const filteredTestimonials = testimonials
-    .filter((t) => (activeCategory === "All" ? true : t.category === activeCategory))
-    .filter((t) => t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.feedback.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter((t) => (ratingFilter > 0 ? t.rating === ratingFilter : true));
-
-  const topTestimonials = [...testimonials].sort((a, b) => b.rating - a.rating).slice(0, 3);
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 700,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 768, settings: { slidesToShow: 1 } },
-    ],
-  };
-
-  // Typing effect
-  useEffect(() => {
-    if (filteredTestimonials.length === 0) return;
-    const currentFeedback = filteredTestimonials[currentFeedbackIdx].feedback;
-    if (charIndex < currentFeedback.length) {
-      const timeout = setTimeout(() => {
-        setTypedFeedback((prev) => prev + currentFeedback[charIndex]);
-        setCharIndex((prev) => prev + 1);
-      }, 30);
-      return () => clearTimeout(timeout);
-    } else {
-      const timeout = setTimeout(() => {
-        setTypedFeedback("");
-        setCharIndex(0);
-        setCurrentFeedbackIdx((prev) => (prev + 1) % filteredTestimonials.length);
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [charIndex, filteredTestimonials, currentFeedbackIdx]);
-
-  const handleLike = (index) => {
-    const updated = [...testimonials];
-    updated[index].likes += 1;
-    setTestimonials(updated);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const newTestimonial = {
-      name: form.name.value,
-      designation: form.designation.value,
-      company: form.company.value,
-      image: "https://via.placeholder.com/100",
-      rating: Number(form.rating.value),
-      category: form.category.value,
-      feedback: form.feedback.value,
-      likes: 0,
-    };
-    setTestimonials([newTestimonial, ...testimonials]);
-    setShowForm(false);
-    form.reset();
-  };
+  const filteredTestimonials = testimonialsData.filter((t) => {
+    const matchesCategory = category === "All" || t.category === category;
+    const matchesSearch =
+      t.name.toLowerCase().includes(search.toLowerCase()) ||
+      t.feedback.toLowerCase().includes(search.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-indigo-800 to-purple-900 text-white px-4 relative">
-      <h2 className="text-4xl font-bold text-center mb-8 z-10 relative">Testimonials</h2>
+    <section className="py-16 px-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 relative">
+      {/* Background Decorative */}
+      <div className="absolute inset-0 bg-[url('/backgrounds/testimonials-bg.svg')] opacity-10 dark:opacity-20 pointer-events-none"></div>
 
-      {/* Categories Filter */}
-      <div className="flex justify-center gap-4 mb-6 flex-wrap z-10 relative">
-        {categories.map((cat, idx) => (
-          <button
-            key={idx}
-            className={`px-4 py-2 rounded-full border ${
-              activeCategory === cat
-                ? "bg-white text-purple-700 border-white"
-                : "bg-transparent text-white border-white/50 hover:border-white"
-            } transition`}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      <div className="max-w-6xl mx-auto relative z-10">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-800 dark:text-gray-100">
+          💬 Testimonials
+        </h2>
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
+          See what mentors, clients, professors, and teammates say about me
+        </p>
 
-      {/* Search & Rating */}
-      <div className="flex justify-center gap-4 mb-12 flex-wrap z-10 relative">
-        <input
-          type="text"
-          placeholder="Search testimonials..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 rounded-full text-black focus:outline-none"
-        />
-        <select
-          value={ratingFilter}
-          onChange={(e) => setRatingFilter(Number(e.target.value))}
-          className="px-4 py-2 rounded-full text-black focus:outline-none"
-        >
-          <option value={0}>All Ratings</option>
-          <option value={5}>5 Stars</option>
-          <option value={4}>4 Stars</option>
-          <option value={3}>3 Stars</option>
-        </select>
-      </div>
+        {/* Search & Filter */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <input
+            type="text"
+            placeholder="Search testimonials..."
+            className="px-4 py-2 border rounded-lg w-full sm:w-1/2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-      {/* Animated Typing */}
-      <div className="max-w-3xl mx-auto text-center mb-12 text-lg italic relative z-10">
-        <p>"{typedFeedback}"</p>
-      </div>
-
-      {/* Top 3 Highlight */}
-      <div className="max-w-6xl mx-auto mb-12 grid md:grid-cols-3 gap-6 z-10 relative">
-        {topTestimonials.map((t, idx) => (
-          <div key={idx} className="bg-white/10 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-2xl transition duration-500 relative">
-            <FaQuoteLeft className="text-purple-400 text-4xl mb-2" />
-            <p className="italic mb-4">{t.feedback}</p>
-            <div className="flex gap-1 mb-4">
-              {Array.from({ length: t.rating }).map((_, i) => (
-                <FaStar key={i} className="text-yellow-400" />
-              ))}
-            </div>
-            <img src={t.image} alt={t.name} className="w-16 h-16 rounded-full mb-2" />
-            <h4 className="font-semibold">{t.name}</h4>
-            <p className="text-sm">{t.designation} | {t.company}</p>
-            <div className="flex gap-2 mt-2">
-              <button onClick={() => handleLike(idx)} className="flex items-center gap-1 text-yellow-400 hover:text-yellow-300 transition">
-                <FaThumbsUp /> {t.likes}
+          <div className="flex gap-2 flex-wrap">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`px-3 py-1 rounded-full text-sm font-medium border transition ${
+                  category === cat
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+                }`}
+              >
+                {cat}
               </button>
-            </div>
-            <FaQuoteRight className="text-purple-400 text-4xl mt-2" />
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* Carousel Slider */}
-      <Slider {...settings} className="max-w-6xl mx-auto z-10 relative">
-        {filteredTestimonials.map((t, idx) => (
-          <div key={idx} className="p-4">
-            <div className="bg-white/10 rounded-xl p-6 shadow-lg flex flex-col items-center text-center hover:shadow-2xl transition duration-500 relative">
-              <FaQuoteLeft className="text-purple-400 text-4xl mb-2" />
-              <p className="italic mb-4">{t.feedback}</p>
-              <div className="flex gap-1 mb-4">
+        {/* Featured Top 3 */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonialsData.filter((t) => t.featured).map((t) => (
+            <div key={t.id} className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-md relative">
+              <span className="absolute -top-3 -left-3 text-4xl opacity-20">“</span>
+              <p className="italic text-gray-800 dark:text-gray-100 mb-4">{t.feedback}</p>
+              <div className="flex items-center gap-3">
+                <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">{t.name}</h4>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{t.role}</span>
+                </div>
+              </div>
+              <div className="mt-2 flex gap-1">
                 {Array.from({ length: t.rating }).map((_, i) => (
-                  <FaStar key={i} className="text-yellow-400" />
+                  <span key={i} className="text-yellow-400">⭐</span>
                 ))}
               </div>
-              <img src={t.image} alt={t.name} className="w-16 h-16 rounded-full mb-2" />
-              <h4 className="font-semibold">{t.name}</h4>
-              <p className="text-sm">{t.designation} | {t.company}</p>
-              <div className="flex gap-2 mt-2">
-                <button onClick={() => handleLike(idx)} className="flex items-center gap-1 text-yellow-400 hover:text-yellow-300 transition">
-                  <FaThumbsUp /> {t.likes}
-                </button>
-              </div>
-              <FaQuoteRight className="text-purple-400 text-4xl mt-2" />
-            </div>
-          </div>
-        ))}
-      </Slider>
-
-      {/* Scrolling Marquee */}
-      <div className="mt-12 overflow-hidden relative z-10">
-        <div className="flex animate-marquee gap-12">
-          {testimonials.map((t, idx) => (
-            <div key={idx} className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm">
-              <img src={t.image} alt={t.name} className="w-8 h-8 rounded-full" />
-              <span>"{t.feedback}" - {t.name}</span>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Submit Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 w-full max-w-lg text-black">
-            <h3 className="text-2xl font-bold mb-4">Submit a Testimonial</h3>
-            <input name="name" placeholder="Name" className="w-full mb-3 px-4 py-2 rounded border" required />
-            <input name="designation" placeholder="Designation" className="w-full mb-3 px-4 py-2 rounded border" required />
-            <input name="company" placeholder="Company" className="w-full mb-3 px-4 py-2 rounded border" required />
-            <select name="category" className="w-full mb-3 px-4 py-2 rounded border" required>
-              <option value="Mentor">Mentor</option>
-              <option value="Client">Client</option>
-              <option value="Teammate">Teammate</option>
-              <option value="Professor">Professor</option>
-            </select>
-            <select name="rating" className="w-full mb-3 px-4 py-2 rounded border" required>
-              <option value={5}>5 Stars</option>
-              <option value={4}>4 Stars</option>
-              <option value={3}>3 Stars</option>
-            </select>
-            <textarea name="feedback" placeholder="Your Feedback" className="w-full mb-3 px-4 py-2 rounded border" required />
-            <div className="flex justify-end gap-4">
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-              <button type="submit" className="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800">Submit</button>
-            </div>
-          </form>
+        {/* Swiper Carousel for filtered testimonials */}
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={30}
+          slidesPerView={1}
+          navigation
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 4000 }}
+          className="max-w-4xl mx-auto"
+        >
+          {filteredTestimonials.map((t) => (
+            <SwiperSlide key={t.id}>
+              <div className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg relative">
+                <span className="absolute -top-3 -left-3 text-4xl opacity-20">“</span>
+                <p className="italic text-gray-800 dark:text-gray-100 mb-4">{t.feedback}</p>
+                <div className="flex items-center gap-3">
+                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">{t.name}</h4>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t.role}</span>
+                  </div>
+                </div>
+                <div className="mt-2 flex gap-1">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <span key={i} className="text-yellow-400">⭐</span>
+                  ))}
+                </div>
+                {/* Like / Upvote */}
+                <button className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">👍 Like</button>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* Marquee / Ticker Strip */}
+        <div className="mt-8 overflow-hidden relative">
+          <div className="whitespace-nowrap animate-marquee flex gap-8">
+            {testimonialsData.map((t) => (
+              <div
+                key={t.id}
+                className="inline-block bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-md text-gray-800 dark:text-gray-100 font-medium"
+              >
+                {t.name}: “{t.feedback.length > 50 ? t.feedback.slice(0, 50) + "..." : t.feedback}”
+              </div>
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Submit Testimonial Button */}
-      <div className="text-center mt-12 z-10 relative">
-        <button onClick={() => setShowForm(true)} className="px-6 py-3 bg-purple-700 rounded-lg hover:bg-purple-800 transition flex items-center gap-2 mx-auto">
-          <FaPlus /> Submit a Testimonial
-        </button>
+        {/* Submit Testimonial */}
+        <div className="mt-8 text-center">
+          <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+            📝 Submit a Testimonial
+          </button>
+        </div>
       </div>
 
       {/* Marquee Animation */}
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }
-        .animate-marquee {
-          display: inline-flex;
-          white-space: nowrap;
-          animation: marquee 20s linear infinite;
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+          }
+          .animate-marquee {
+            display: inline-flex;
+            animation: marquee 20s linear infinite;
+          }
+        `}
+      </style>
     </section>
   );
 }
