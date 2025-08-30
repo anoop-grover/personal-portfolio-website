@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Home";
 import About from "./components/About";
@@ -12,20 +12,43 @@ import Footer from "./components/Footer";
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
 
+  // Apply/remove Tailwind "dark" class on <html> tag
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
-    <div className={`${darkMode ? "dark" : ""} font-sans bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-500`}>
+    <div className="font-sans bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-500">
       {/* Navbar */}
       <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
       {/* Sections */}
       <main>
-        <section id="home"><Hero /></section>
-        <section id="about"><About /></section>
-        <section id="projects"><Projects /></section>
-        <section id="services"><Services /></section>
-        <section id="certifications"><Certifications /></section>
-        <section id="testimonials"><Testimonials /></section>
-        <section id="contact"><Contact /></section>
+        <section id="home">
+          <Hero />
+        </section>
+        <section id="about">
+          <About />
+        </section>
+        <section id="projects">
+          <Projects />
+        </section>
+        <section id="services">
+          <Services />
+        </section>
+        <section id="certifications">
+          <Certifications />
+        </section>
+        <section id="testimonials">
+          <Testimonials />
+        </section>
+        <section id="contact">
+          <Contact />
+        </section>
       </main>
 
       {/* Footer */}
