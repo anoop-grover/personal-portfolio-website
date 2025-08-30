@@ -189,12 +189,12 @@ export default function HeroSection() {
         </button>
 
         {/* Light/Dark Toggle */}
-        <button
+        {/*<button
           onClick={() => setDark(!dark)}
           className="px-4 py-2 bg-yellow-400 rounded-lg text-black"
         >
           {dark ? "☀ Light Mode" : "🌙 Dark Mode"}
-        </button>
+        </button> */}
       </div>
 
       {/* Scroll Indicator */}
