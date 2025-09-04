@@ -71,7 +71,7 @@ BEGIN:VCARD
 VERSION:3.0
 FN:Anoop Grover
 ORG:Personal Portfolio
-TEL;TYPE=WORK,VOICE:+91 76687 99787
+TEL;TYPE=WORK,VOICE:+917668799787
 EMAIL:iamgroveranoop.1979@gmail.com
 ADR;TYPE=WORK:;;Punjab, India
 END:VCARD
@@ -109,21 +109,21 @@ END:VCARD
             <FaEnvelope className="text-purple-400 text-2xl" />
             <div>
               <p className="font-semibold">Email</p>
-              <p>anoop@example.com</p>
+              <p>iamgroveranoop.1979@gmail.com</p>
             </div>
           </div>
           <div className="flex items-center gap-4 bg-white/10 p-6 rounded-xl hover:shadow-lg transition">
             <FaPhone className="text-purple-400 text-2xl" />
             <div>
               <p className="font-semibold">Phone</p>
-              <p>+91 1234567890</p>
+              <p>+91 76687 99787</p>
             </div>
           </div>
           <div className="flex items-center gap-4 bg-white/10 p-6 rounded-xl hover:shadow-lg transition">
             <FaMapMarkerAlt className="text-purple-400 text-2xl" />
             <div>
               <p className="font-semibold">Location</p>
-              <p>Punjab, India</p>
+              <p>Jalandhar, Punjab, India</p>
             </div>
           </div>
 
