@@ -71,8 +71,8 @@ BEGIN:VCARD
 VERSION:3.0
 FN:Anoop Grover
 ORG:Personal Portfolio
-TEL;TYPE=WORK,VOICE:+911234567890
-EMAIL:anoop@example.com
+TEL;TYPE=WORK,VOICE:+91 76687 99787
+EMAIL:iamgroveranoop.1979@gmail.com
 ADR;TYPE=WORK:;;Punjab, India
 END:VCARD
     `;
