@@ -173,10 +173,10 @@ export default function HeroSection() {
         </div>
 
         {/* Countdown */}
-        <div className="mb-6">
+{/*         <div className="mb-6">
           <h3 className="font-bold">Next Launch In:</h3>
           <p className="text-lg">{formatTime(countdown)}</p>
-        </div>
+        </div> */}
 
         {/* Chatbot Widget */}
         <button className="mb-6 px-4 py-2 bg-green-500 rounded-lg text-white">
