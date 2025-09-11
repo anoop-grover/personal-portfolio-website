@@ -194,7 +194,7 @@ export default function Services() {
       </div>
 
       {/* Sticky mini navigation */}
-      <nav className="hidden lg:flex flex-col gap-3 fixed left-6 top-1/3 z-10">
+{/*       <nav className="hidden lg:flex flex-col gap-3 fixed left-6 top-1/3 z-10">
         <a href="#services-top" className="opacity-80 hover:opacity-100 underline-offset-4 hover:underline">
           Overview
         </a>
@@ -207,7 +207,7 @@ export default function Services() {
         <a href="#services-book" className="opacity-80 hover:opacity-100 underline-offset-4 hover:underline">
           Book
         </a>
-      </nav>
+      </nav> */}
 
       {/* Header / Controls */}
       <div id="services-top" className="max-w-6xl mx-auto flex flex-col gap-4 mb-8">
