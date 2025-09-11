@@ -75,12 +75,12 @@ export default function AboutMe() {
       className={`relative w-full py-20 ${darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-b from-purple-600 to-indigo-600 text-white"} flex flex-col items-center gap-16 px-4`}
     >
       {/* Sticky Sidebar Nav */}
-      <aside className="hidden md:block fixed left-4 top-1/3 space-y-4">
+{/*       <aside className="hidden md:block fixed left-4 top-1/3 space-y-4">
         <a href="#about" className="block hover:underline">Intro</a>
         <a href="#skills" className="block hover:underline">Skills</a>
         <a href="#timeline" className="block hover:underline">Timeline</a>
         <a href="#certs" className="block hover:underline">Certificates</a>
-      </aside>
+      </aside> */}
 
       {/* Background looping video */}
       <video
